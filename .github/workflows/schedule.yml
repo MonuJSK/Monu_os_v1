@@ -1,0 +1,60 @@
+name: Daily Market Update
+
+on:
+  schedule:
+    # Run daily at 03:30 UTC (9:00 AM IST)
+    - cron: '30 3 * * *'
+  workflow_dispatch: # Allow manual trigger
+
+jobs:
+  daily-update:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+
+    - name: Cache pip dependencies
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    - name: Create env file
+      run: |
+        cat << EOF > .env
+        TVDATA_USERNAME=${{ secrets.TVDATA_USERNAME }}
+        TVDATA_PASSWORD=${{ secrets.TVDATA_PASSWORD }}
+        GOOGLE_SA_JSON_PATH=/tmp/service_account.json
+        SHEETS_ID=${{ secrets.SHEETS_ID }}
+        TELEGRAM_BOT_TOKEN=${{ secrets.TELEGRAM_BOT_TOKEN }}
+        TELEGRAM_CHAT_ID=${{ secrets.TELEGRAM_CHAT_ID }}
+        CLAUDE_API_KEY=${{ secrets.CLAUDE_API_KEY }}
+        EOF
+
+    - name: Create service account JSON
+      run: |
+        echo "${{ secrets.GOOGLE_SA_JSON }}" > /tmp/service_account.json
+
+    - name: Run daily pipeline
+      run: |
+        python src/cli.py run --daily --log-level INFO
+
+    - name: Upload logs on failure
+      if: failure()
+      uses: actions/upload-artifact@v3
+      with:
+        name: monu-os-logs
+        path: monu_os.log
