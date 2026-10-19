@@ -76,7 +76,7 @@ class OracleMessageFormatter:
         prompt = self._fill_template(template, prompt_inputs)
 
         # Call Claude API
-        response = self.client.messages.create(
+        response = self.client.messages.create(  # pylint: disable=no-member
             model="claude-3-5-sonnet-20241022",
             max_tokens=1000,
             temperature=0.7,
