@@ -52,9 +52,12 @@ jobs:
       run: |
         python src/cli.py run --daily --log-level INFO
 
+    
     - name: Upload logs on failure
       if: failure()
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: monu-os-logs
         path: monu_os.log
+        if-no-files-found: ignore
+
