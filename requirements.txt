@@ -1,4 +1,4 @@
-tvDatafeed==2.1.0
+git+https://github.com/rongardF/tvdatafeed.git
 pandas==2.1.4
 numpy==1.26.2
 python-dotenv==1.0.0
