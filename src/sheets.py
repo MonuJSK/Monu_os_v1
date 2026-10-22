@@ -154,11 +154,17 @@ class GoogleSheetsManager:
                 logger.warning("No configuration data found in Config sheet")
                 return {}
 
-            # Convert to dictionary (assuming first row has headers)
+            # Support key/value rows as well as ordinary header-based records.
             config = {}
-            for record in config_data:
-                for key, value in record.items():
-                    config[key.lower().replace(' ', '_')] = value
+            if all("key" in record and "value" in record for record in config_data):
+                for record in config_data:
+                    key = str(record["key"]).strip().lower().replace(" ", "_")
+                    if key:
+                        config[key] = record["value"]
+            else:
+                for record in config_data:
+                    for key, value in record.items():
+                        config[key.lower().replace(" ", "_")] = value
 
             logger.info("Successfully read configuration from Google Sheets")
             return config
