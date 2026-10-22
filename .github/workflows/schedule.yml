@@ -50,9 +50,8 @@ jobs:
 
     - name: Run daily pipeline
       run: |
-        python src/cli.py run --daily --log-level INFO
+        python -m src.cli run --daily --log-level INFO
 
-    
     - name: Upload logs on failure
       if: failure()
       uses: actions/upload-artifact@v4
@@ -60,4 +59,3 @@ jobs:
         name: monu-os-logs
         path: monu_os.log
         if-no-files-found: ignore
-
