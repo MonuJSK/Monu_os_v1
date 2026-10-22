@@ -160,8 +160,8 @@ class TestGoogleSheetsManager:
 
             assert result is True
             mock_summary_sheet.update_cell.assert_called()
-            # Should update row 2 (1-indexed, after header)
-            assert mock_summary_sheet.update_cell.call_count == 5  # 5 columns to update
+            # Should update all 6 summary columns, including timestamp.
+            assert mock_summary_sheet.update_cell.call_count == 6
 
     def test_update_summary_failure(self, sheets_manager):
         """Test summary update failure."""
