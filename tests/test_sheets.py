@@ -282,6 +282,10 @@ class TestGoogleSheetsManager:
         mock_raw_sheet = Mock()
         mock_summary_sheet = Mock()
         mock_config_sheet = Mock()
+        # Model empty worksheets so header initialization is exercised.
+        for worksheet in (mock_raw_sheet, mock_summary_sheet, mock_config_sheet):
+            worksheet.row_count = 0
+            worksheet.get.return_value = []
 
         # Mock get calls
         call_count = 0
