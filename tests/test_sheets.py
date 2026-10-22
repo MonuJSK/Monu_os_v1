@@ -6,6 +6,7 @@ import pytest
 from unittest.mock import Mock, patch, MagicMock, mock_open
 import pandas as pd
 from datetime import datetime
+from gspread.exceptions import WorksheetNotFound
 
 from src.sheets import GoogleSheetsManager
 
@@ -160,8 +161,8 @@ class TestGoogleSheetsManager:
 
             assert result is True
             mock_summary_sheet.update_cell.assert_called()
-            # Should update row 2 (1-indexed, after header)
-            assert mock_summary_sheet.update_cell.call_count == 5  # 5 columns to update
+            # Should update all 6 summary columns, including timestamp.
+            assert mock_summary_sheet.update_cell.call_count == 6
 
     def test_update_summary_failure(self, sheets_manager):
         """Test summary update failure."""
@@ -229,7 +230,7 @@ class TestGoogleSheetsManager:
 
     def test_get_or_create_worksheet_new(self, sheets_manager):
         """Test creating new worksheet."""
-        sheets_manager.sheet.worksheet.side_effect = Exception("Worksheet not found")
+        sheets_manager.sheet.worksheet.side_effect = WorksheetNotFound
         mock_new_sheet = Mock()
         sheets_manager.sheet.add_worksheet.return_value = mock_new_sheet
 
@@ -281,6 +282,10 @@ class TestGoogleSheetsManager:
         mock_raw_sheet = Mock()
         mock_summary_sheet = Mock()
         mock_config_sheet = Mock()
+        # Model empty worksheets so header initialization is exercised.
+        for worksheet in (mock_raw_sheet, mock_summary_sheet, mock_config_sheet):
+            worksheet.row_count = 0
+            worksheet.get.return_value = []
 
         # Mock get calls
         call_count = 0
