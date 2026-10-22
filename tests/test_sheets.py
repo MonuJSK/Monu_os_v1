@@ -27,17 +27,27 @@ class TestGoogleSheetsManager:
         assert sheets_manager.gc is not None
         assert sheets_manager.sheet is not None
 
+    @patch('src.sheets.ServiceAccountCredentials')
     @patch('src.sheets.gspread')
-    def test_connect_success(self, mock_gspread, sheets_manager):
+    def test_connect_success(self, mock_gspread, mock_credentials, sheets_manager):
         """Test successful connection to Google Sheets."""
+        mock_creds = Mock()
         mock_gc = Mock()
         mock_sheet = Mock()
+        mock_credentials.from_json_keyfile_name.return_value = mock_creds
         mock_gspread.authorize.return_value = mock_gc
         mock_gc.open_by_key.return_value = mock_sheet
 
         sheets_manager._connect()
 
-        mock_gspread.authorize.assert_called_once()
+        mock_credentials.from_json_keyfile_name.assert_called_once_with(
+            'fake_path.json',
+            [
+                'https://spreadsheets.google.com/feeds',
+                'https://www.googleapis.com/auth/drive'
+            ]
+        )
+        mock_gspread.authorize.assert_called_once_with(mock_creds)
         mock_gc.open_by_key.assert_called_once_with('fake_sheet_id')
 
     @patch('src.sheets.gspread')
