@@ -6,6 +6,7 @@ import pytest
 from unittest.mock import Mock, patch, MagicMock, mock_open
 import pandas as pd
 from datetime import datetime
+from gspread.exceptions import WorksheetNotFound
 
 from src.sheets import GoogleSheetsManager
 
@@ -229,7 +230,7 @@ class TestGoogleSheetsManager:
 
     def test_get_or_create_worksheet_new(self, sheets_manager):
         """Test creating new worksheet."""
-        sheets_manager.sheet.worksheet.side_effect = Exception("Worksheet not found")
+        sheets_manager.sheet.worksheet.side_effect = WorksheetNotFound
         mock_new_sheet = Mock()
         sheets_manager.sheet.add_worksheet.return_value = mock_new_sheet
 
