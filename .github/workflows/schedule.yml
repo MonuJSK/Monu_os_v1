@@ -1,9 +1,6 @@
 name: Daily Market Update
 
 on:
-  push:
-    paths:
-      - '.github/workflows/schedule.yml'
   schedule:
     # Run daily at 03:30 UTC (9:00 AM IST)
     - cron: '30 3 * * *'
