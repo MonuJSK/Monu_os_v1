@@ -57,7 +57,7 @@ class TestMarketDataFetcher:
         """Test successful data fetching."""
         mock_tv_instance = Mock()
         mock_tv_instance.get_hist.return_value = sample_data
-        mock_tv_class.return_value = mock_tv_instance
+        fetcher.tv = mock_tv_instance
 
         result = fetcher.fetch_symbol_data('NIFTY', 'NSE', n_bars=100)
 
@@ -74,7 +74,7 @@ class TestMarketDataFetcher:
     def test_fetch_symbol_data_failure(self, mock_tv_class, fetcher):
         """Test data fetching failure scenarios."""
         mock_tv_instance = Mock()
-        mock_tv_class.return_value = mock_tv_instance
+        fetcher.tv = mock_tv_instance
 
         # Test None return
         mock_tv_instance.get_hist.return_value = None
