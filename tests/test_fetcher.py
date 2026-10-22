@@ -186,13 +186,13 @@ class TestMarketDataFetcher:
         """Test market summary generation."""
         symbol_data = {
             'NIFTY': {
-                'indicators': {'pct_change': 2.5, 'vol_change_pct': 15.0}
+                'indicators': {'pct_change': 2.5, 'vol_change_pct': 60.0}
             },
             'BANKNIFTY': {
                 'indicators': {'pct_change': -1.2, 'vol_change_pct': 8.0}
             },
             'BTCUSDT': {
-                'indicators': {'pct_change': 5.0, 'vol_change_pct': 25.0}
+                'indicators': {'pct_change': 5.0, 'vol_change_pct': 75.0}
             }
         }
 
@@ -201,7 +201,7 @@ class TestMarketDataFetcher:
         assert summary['total_symbols'] == 3
         assert len(summary['gainers']) == 2  # NIFTY and BTCUSDT
         assert len(summary['losers']) == 1   # BANKNIFTY
-        assert len(summary['high_volume']) == 2  # BTCUSDT and NIFTY (>50% volume change)
+        assert len(summary['high_volume']) == 2  # NIFTY and BTCUSDT (>50% volume change)
 
         # Check sorting
         assert summary['gainers'][0][1] >= summary['gainers'][1][1]  # Descending order
